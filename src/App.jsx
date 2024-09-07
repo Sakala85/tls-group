@@ -1,6 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import "./App.css";
+const ServiceCard = ({ title, description, index, total }) => {
+  const cardRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start end", "end start"],
+  });
+
+  const x = useTransform(scrollYProgress, [0, 0.5, 1], ["100%", "0%", "-100%"]);
+
+  return (
+    <motion.div ref={cardRef} className="service-card" style={{ x }}>
+      <h3 className="service-title">{title}</h3>
+      <p className="service-description">{description}</p>
+    </motion.div>
+  );
+};
 
 const TLSLandingPage = () => {
   const [loading, setLoading] = useState(true);
@@ -8,6 +24,24 @@ const TLSLandingPage = () => {
   const { scrollY } = useScroll();
   const [canPlayVideo, setCanPlayVideo] = useState(false);
   const videoRef = useRef(null);
+
+  const services = [
+    {
+      title: "E-Learning",
+      description:
+        "Custom-tailored learning experiences for your brand and products.",
+    },
+    {
+      title: "Training",
+      description:
+        "Personalized training programs to enhance your sales team's skills.",
+    },
+    {
+      title: "Design",
+      description:
+        "Innovative design solutions to elevate your brand presence.",
+    },
+  ];
 
   const textScale = useTransform(scrollY, [0, 600], [1, 1.5]);
   const textOpacity = useTransform(scrollY, [0, 300, 600], [1, 1, 0]);
@@ -20,8 +54,6 @@ const TLSLandingPage = () => {
     [600, 700, 1000, 1001],
     [0, 1, 1, 0]
   );
-
-  const nextSectionOpacity = useTransform(scrollY, [1000, 1001], [0, 1]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -145,23 +177,20 @@ const TLSLandingPage = () => {
         </section>
       </main>
 
-      <motion.section
-        className="services-section"
-        style={{ opacity: nextSectionOpacity }}
-      >
+      <section className="services-section">
         <h2 className="services-title">Our Services</h2>
-        <div className="services-grid">
-          {["E-Learning", "Training", "Design"].map((service, index) => (
-            <div key={index} className="service-card">
-              <h3 className="service-title">{service}</h3>
-              <p className="service-description">
-                Custom-tailored learning experiences for your brand and
-                products.
-              </p>
-            </div>
+        <div className="services-container">
+          {services.map((service, index) => (
+            <ServiceCard
+              key={index}
+              title={service.title}
+              description={service.description}
+              index={index}
+              total={services.length}
+            />
           ))}
         </div>
-      </motion.section>
+      </section>
 
       <footer className="footer">
         <p>&copy; 2024 TLS GROUP. All rights reserved.</p>
